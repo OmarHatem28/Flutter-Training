@@ -24,6 +24,7 @@ class RandomWordsState extends State<RandomWords>{
   final _suggestions = <WordPair>[];
   final _saved = Set<WordPair>();
   final _biggerFont = const TextStyle(fontSize: 18.0);
+  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
 
   GoogleSignIn _googleSignIn = GoogleSignIn(
     scopes: [
@@ -100,6 +101,7 @@ class RandomWordsState extends State<RandomWords>{
                 tiles: tiles,
             ).toList();
             return new Scaffold(
+              key: _scaffoldKey,
               appBar: new AppBar(
                 title: const Text('Saved Suggestions'),
               ),
@@ -123,6 +125,7 @@ class RandomWordsState extends State<RandomWords>{
             'https://graph.facebook.com/v2.12/me?fields=name,first_name,last_name,email&access_token=${token}');
         final profile = json.decode(graphResponse.body);
         print(profile["email"]);
+        showMessage(profile["email"]);
         break;
       case FacebookLoginStatus.cancelledByUser:
         print('CANCELED BY USER');
@@ -137,9 +140,15 @@ class RandomWordsState extends State<RandomWords>{
     try {
       await _googleSignIn.signIn();
       print(_googleSignIn.currentUser.displayName);
+      showMessage(_googleSignIn.currentUser.displayName);
     } catch (error) {
-      print("WarhiT"+error.toString());
+      print(error);
     }
+  }
+
+  void showMessage(String message, [MaterialColor color = Colors.red]) {
+    _scaffoldKey.currentState
+        .showSnackBar(new SnackBar(backgroundColor: color, content: new Text(message)));
   }
 
 }
