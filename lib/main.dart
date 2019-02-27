@@ -3,6 +3,7 @@ import 'package:english_words/english_words.dart';
 import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:google_sign_in/google_sign_in.dart';
 
 void main() => runApp(MyApp());
 
@@ -23,6 +24,14 @@ class RandomWordsState extends State<RandomWords>{
   final _suggestions = <WordPair>[];
   final _saved = Set<WordPair>();
   final _biggerFont = const TextStyle(fontSize: 18.0);
+
+  GoogleSignIn _googleSignIn = GoogleSignIn(
+    scopes: [
+      'email',
+      'https://www.googleapis.com/auth/contacts.readonly',
+    ],
+  );
+
   Widget _buildSuggestions() {
     return ListView.builder(itemBuilder: (context, i) {
       if ( i.isOdd ) return Divider();
@@ -95,30 +104,42 @@ class RandomWordsState extends State<RandomWords>{
                 title: const Text('Saved Suggestions'),
               ),
               body: new ListView( children: divided ),
-              bottomNavigationBar: IconButton(icon: Icon(Icons.accessibility), onPressed: () async {
-                final facebookLogin = FacebookLogin();
-                final result = await facebookLogin.logInWithReadPermissions(['email','user_gender']);
-
-                switch (result.status) {
-                  case FacebookLoginStatus.loggedIn:
-                    final token = result.accessToken.token;
-                    final graphResponse = await http.get(
-                        'https://graph.facebook.com/v2.12/me?fields=name,first_name,last_name,email&access_token=${token}');
-                    final profile = json.decode(graphResponse.body);
-                    print(profile["email"]);
-                    break;
-                  case FacebookLoginStatus.cancelledByUser:
-                    print('CANCELED BY USER');
-                    break;
-                  case FacebookLoginStatus.error:
-                    print(result.errorMessage);
-                    break;
-                }
-              }),
+              bottomNavigationBar: IconButton(icon: Icon(Icons.accessibility), onPressed: _handleFacebookSignIn ),
+              drawer: IconButton(icon: Icon(Icons.print), onPressed: _handleGoogleSignIn ),
             );
           },
       ),
     );
+  }
+
+  _handleFacebookSignIn() async {
+    final facebookLogin = FacebookLogin();
+    final result = await facebookLogin.logInWithReadPermissions(['email','user_gender']);
+
+    switch (result.status) {
+      case FacebookLoginStatus.loggedIn:
+        final token = result.accessToken.token;
+        final graphResponse = await http.get(
+            'https://graph.facebook.com/v2.12/me?fields=name,first_name,last_name,email&access_token=${token}');
+        final profile = json.decode(graphResponse.body);
+        print(profile["email"]);
+        break;
+      case FacebookLoginStatus.cancelledByUser:
+        print('CANCELED BY USER');
+        break;
+      case FacebookLoginStatus.error:
+        print(result.errorMessage);
+        break;
+    }
+  }
+
+  Future<void> _handleGoogleSignIn() async {
+    try {
+      await _googleSignIn.signIn();
+      print(_googleSignIn.currentUser.displayName);
+    } catch (error) {
+      print("WarhiT"+error.toString());
+    }
   }
 
 }
