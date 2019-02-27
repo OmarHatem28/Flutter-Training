@@ -4,6 +4,7 @@ import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 void main() => runApp(MyApp());
 
@@ -122,7 +123,7 @@ class RandomWordsState extends State<RandomWords>{
         final graphResponse = await http.get(
             'https://graph.facebook.com/v2.12/me?fields=name,first_name,last_name,email&access_token=${token}');
         final profile = json.decode(graphResponse.body);
-        print(profile["email"]);
+        makeToast(profile["email"]);
         break;
       case FacebookLoginStatus.cancelledByUser:
         print('CANCELED BY USER');
@@ -136,10 +137,22 @@ class RandomWordsState extends State<RandomWords>{
   Future<void> _handleGoogleSignIn() async {
     try {
       await _googleSignIn.signIn();
-      print(_googleSignIn.currentUser.displayName);
+      makeToast(_googleSignIn.currentUser.displayName);
     } catch (error) {
-      print("WarhiT"+error.toString());
+      print(error);
     }
+  }
+
+  void makeToast(String msg){
+    Fluttertoast.showToast(
+        msg: msg,
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.CENTER,
+        timeInSecForIos: 1,
+        backgroundColor: Colors.red,
+        textColor: Colors.white,
+        fontSize: 16.0
+    );
   }
 
 }
