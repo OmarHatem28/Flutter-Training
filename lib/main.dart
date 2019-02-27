@@ -25,6 +25,7 @@ class RandomWordsState extends State<RandomWords>{
   final _suggestions = <WordPair>[];
   final _saved = Set<WordPair>();
   final _biggerFont = const TextStyle(fontSize: 18.0);
+  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
 
   GoogleSignIn _googleSignIn = GoogleSignIn(
     scopes: [
@@ -101,6 +102,7 @@ class RandomWordsState extends State<RandomWords>{
                 tiles: tiles,
             ).toList();
             return new Scaffold(
+              key: _scaffoldKey,
               appBar: new AppBar(
                 title: const Text('Saved Suggestions'),
               ),
@@ -123,7 +125,8 @@ class RandomWordsState extends State<RandomWords>{
         final graphResponse = await http.get(
             'https://graph.facebook.com/v2.12/me?fields=name,first_name,last_name,email&access_token=${token}');
         final profile = json.decode(graphResponse.body);
-        makeToast(profile["email"]);
+        print(profile["email"]);
+        showMessage(profile["email"]);
         break;
       case FacebookLoginStatus.cancelledByUser:
         print('CANCELED BY USER');
@@ -137,22 +140,16 @@ class RandomWordsState extends State<RandomWords>{
   Future<void> _handleGoogleSignIn() async {
     try {
       await _googleSignIn.signIn();
-      makeToast(_googleSignIn.currentUser.displayName);
+      print(_googleSignIn.currentUser.displayName);
+      showMessage(_googleSignIn.currentUser.displayName);
     } catch (error) {
       print(error);
     }
   }
 
-  void makeToast(String msg){
-    Fluttertoast.showToast(
-        msg: msg,
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.CENTER,
-        timeInSecForIos: 1,
-        backgroundColor: Colors.red,
-        textColor: Colors.white,
-        fontSize: 16.0
-    );
+  void showMessage(String message, [MaterialColor color = Colors.red]) {
+    _scaffoldKey.currentState
+        .showSnackBar(new SnackBar(backgroundColor: color, content: new Text(message)));
   }
 
 }
