@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:english_words/english_words.dart';
+import 'package:flutter_facebook_login/flutter_facebook_login.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 void main() => runApp(MyApp());
 
@@ -7,7 +10,10 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Welcome to Flutter',
+      title: 'Startup Name Generator',
+      theme: new ThemeData(
+        primaryColor: Colors.red,
+      ),
       home: RandomWords(),
     );
   }
@@ -89,7 +95,26 @@ class RandomWordsState extends State<RandomWords>{
                 title: const Text('Saved Suggestions'),
               ),
               body: new ListView( children: divided ),
-              bottomNavigationBar: IconButton(icon: Icon(Icons.accessibility), onPressed: null),
+              bottomNavigationBar: IconButton(icon: Icon(Icons.accessibility), onPressed: () async {
+                final facebookLogin = FacebookLogin();
+                final result = await facebookLogin.logInWithReadPermissions(['email','user_gender']);
+
+                switch (result.status) {
+                  case FacebookLoginStatus.loggedIn:
+                    final token = result.accessToken.token;
+                    final graphResponse = await http.get(
+                        'https://graph.facebook.com/v2.12/me?fields=name,first_name,last_name,email&access_token=${token}');
+                    final profile = json.decode(graphResponse.body);
+                    print(profile["email"]);
+                    break;
+                  case FacebookLoginStatus.cancelledByUser:
+                    print('CANCELED BY USER');
+                    break;
+                  case FacebookLoginStatus.error:
+                    print(result.errorMessage);
+                    break;
+                }
+              }),
             );
           },
       ),
