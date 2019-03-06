@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:english_words/english_words.dart';
-import 'package:flutter/physics.dart';
 import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 
 void main() => runApp(MyApp());
 
@@ -26,6 +26,33 @@ class RandomWordsState extends State<RandomWords> {
   final _saved = Set<WordPair>();
   final _biggerFont = const TextStyle(fontSize: 18.0);
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
+
+  FirebaseMessaging _firebaseMessaging = new FirebaseMessaging();
+
+  @override
+  void initState() {
+    super.initState();
+    _firebaseMessaging.configure(
+      onMessage: (Map<String, dynamic> message) {
+        print('on message $message');
+        showMessage(message.toString());
+      },
+      onResume: (Map<String, dynamic> message) {
+        print('on resume $message');
+        showMessage(message.toString());
+      },
+      onLaunch: (Map<String, dynamic> message) {
+        print('on launch $message');
+        showMessage(message.toString());
+      },
+    );
+    _firebaseMessaging.requestNotificationPermissions(
+        const IosNotificationSettings(sound: true, badge: true, alert: true));
+    _firebaseMessaging.getToken().then((token){
+      print(token);
+      showMessage(token);
+    });
+  }
 
   GoogleSignIn _googleSignIn = GoogleSignIn(
     scopes: [
@@ -204,6 +231,17 @@ class RandomWordsState extends State<RandomWords> {
               title: const Text('Saved Suggestions'),
             ),
             body: new ListView(children: divided),
+            floatingActionButton: IconButton(
+                icon: Icon(Icons.navigate_next),
+                highlightColor: Colors.yellow,
+                color: Colors.red,
+                splashColor: Colors.blue,
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => _newPage()),
+                  );
+                }),
             drawer: Container(
               decoration: BoxDecoration(color: Colors.white),
               child: Column(
@@ -220,11 +258,11 @@ class RandomWordsState extends State<RandomWords> {
                     child: Text(
                       "Sign in With Your Favorite Platform",
                       style: TextStyle(
-                          color: Colors.lightBlue,
-                          fontWeight: FontWeight.bold,
-                          fontStyle: FontStyle.italic,
-                          decoration: TextDecoration.underline,
-                          fontSize: 18.0,
+                        color: Colors.lightBlue,
+                        fontWeight: FontWeight.bold,
+                        fontStyle: FontStyle.italic,
+                        decoration: TextDecoration.underline,
+                        fontSize: 18.0,
                       ),
                     ),
                   ),
@@ -249,7 +287,7 @@ class RandomWordsState extends State<RandomWords> {
         final graphResponse = await http.get(
             'https://graph.facebook.com/v2.12/me?fields=name,first_name,last_name,email&access_token=${token}');
         final profile = json.decode(graphResponse.body);
-        print(profile["email"]);
+        print(profile);
         showMessage(profile["email"]);
         break;
       case FacebookLoginStatus.cancelledByUser:
@@ -265,7 +303,7 @@ class RandomWordsState extends State<RandomWords> {
   Future<void> _handleGoogleSignIn() async {
     try {
       await _googleSignIn.signIn();
-      print(_googleSignIn.currentUser.displayName);
+      print(_googleSignIn.currentUser.toString());
       showMessage(_googleSignIn.currentUser.displayName);
     } catch (error) {
       print(error);
@@ -276,6 +314,41 @@ class RandomWordsState extends State<RandomWords> {
   void showMessage(String message, [MaterialColor color = Colors.red]) {
     _scaffoldKey.currentState.showSnackBar(
         new SnackBar(backgroundColor: color, content: new Text(message)));
+  }
+}
+
+class _newPage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("New Design"),
+      ),
+      body: Column(
+        children: <Widget>[
+          Row(
+            children: <Widget>[
+              Card(
+                elevation: 10.0,
+                shape: CircleBorder(side: BorderSide.none),
+                color: Colors.yellow,
+                child: Column(
+                  children: <Widget>[
+                    Image.asset(
+                      "images/background.jpg",
+                      height: 100.0,
+                      fit: BoxFit.fitHeight,
+                    ),
+                    IconButton(icon: Icon(Icons.call), onPressed: null),
+                    Text("Call"),
+                  ],
+                ),
+              )
+            ],
+          ),
+        ],
+      ),
+    );
   }
 }
 
