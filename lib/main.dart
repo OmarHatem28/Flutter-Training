@@ -231,17 +231,32 @@ class RandomWordsState extends State<RandomWords> {
               title: const Text('Saved Suggestions'),
             ),
             body: new ListView(children: divided),
-            floatingActionButton: IconButton(
-                icon: Icon(Icons.navigate_next),
-                highlightColor: Colors.yellow,
-                color: Colors.red,
-                splashColor: Colors.blue,
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => NewPage()),
-                  );
-                }),
+//            floatingActionButton: IconButton(
+//                icon: Icon(Icons.navigate_next),
+//                highlightColor: Colors.yellow,
+//                color: Colors.red,
+//                splashColor: Colors.blue,
+//                onPressed: () {
+//                  Navigator.push(
+//                    context,
+//                    MaterialPageRoute(builder: (context) => NewPage()),
+//                  );
+//                }),
+            floatingActionButton: Container(
+              decoration: ShapeDecoration(shape: CircleBorder(), color: Colors.red),
+              // side:sideborder.none
+              child: IconButton(
+                  icon: Icon(Icons.navigate_next),
+                  highlightColor: Colors.blue,
+                  color: Colors.yellow,
+                  splashColor: Colors.green,
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => NewPage()),
+                    );
+                  }),
+            ),
             drawer: Container(
               decoration: BoxDecoration(color: Colors.white),
               child: Column(
@@ -310,16 +325,17 @@ class RandomWordsState extends State<RandomWords> {
     }
     Navigator.pop(context);
   }
-
 }
 
-void showMessage(String message, GlobalKey<ScaffoldState> _scaffoldKey, [MaterialColor color = Colors.blue]) {
+void showMessage(String message, GlobalKey<ScaffoldState> _scaffoldKey,
+    [MaterialColor color = Colors.blue]) {
   _scaffoldKey.currentState.showSnackBar(
       new SnackBar(backgroundColor: color, content: new Text(message)));
 }
 
 class NewPage extends StatelessWidget {
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -344,9 +360,11 @@ class NewPage extends StatelessWidget {
                     IconButton(icon: Icon(Icons.call), onPressed: null),
                     Text("Call"),
                     SizedBox.fromSize(
-                      child: FlatButton(onPressed: () {
-                        showMessage("Pressed", _scaffoldKey);
-                      }, child: Image.asset('images/background.jpg')),
+                      child: FlatButton(
+                          onPressed: () {
+                            showMessage("Pressed", _scaffoldKey);
+                          },
+                          child: Image.asset('images/background.jpg')),
                       size: Size(200.0, 200.0),
                     )
                   ],
