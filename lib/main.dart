@@ -35,22 +35,22 @@ class RandomWordsState extends State<RandomWords> {
     _firebaseMessaging.configure(
       onMessage: (Map<String, dynamic> message) {
         print('on message $message');
-        showMessage(message.toString());
+        showMessage(message.toString(), _scaffoldKey);
       },
       onResume: (Map<String, dynamic> message) {
         print('on resume $message');
-        showMessage(message.toString());
+        showMessage(message.toString(), _scaffoldKey);
       },
       onLaunch: (Map<String, dynamic> message) {
         print('on launch $message');
-        showMessage(message.toString());
+        showMessage(message.toString(), _scaffoldKey);
       },
     );
     _firebaseMessaging.requestNotificationPermissions(
         const IosNotificationSettings(sound: true, badge: true, alert: true));
-    _firebaseMessaging.getToken().then((token){
+    _firebaseMessaging.getToken().then((token) {
       print(token);
-      showMessage(token);
+      showMessage(token, _scaffoldKey);
     });
   }
 
@@ -239,7 +239,7 @@ class RandomWordsState extends State<RandomWords> {
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => _newPage()),
+                    MaterialPageRoute(builder: (context) => NewPage()),
                   );
                 }),
             drawer: Container(
@@ -288,7 +288,7 @@ class RandomWordsState extends State<RandomWords> {
             'https://graph.facebook.com/v2.12/me?fields=name,first_name,last_name,email&access_token=${token}');
         final profile = json.decode(graphResponse.body);
         print(profile);
-        showMessage(profile["email"]);
+        showMessage(profile["email"], _scaffoldKey);
         break;
       case FacebookLoginStatus.cancelledByUser:
         print('CANCELED BY USER');
@@ -304,23 +304,26 @@ class RandomWordsState extends State<RandomWords> {
     try {
       await _googleSignIn.signIn();
       print(_googleSignIn.currentUser.toString());
-      showMessage(_googleSignIn.currentUser.displayName);
+      showMessage(_googleSignIn.currentUser.displayName, _scaffoldKey);
     } catch (error) {
       print(error);
     }
     Navigator.pop(context);
   }
 
-  void showMessage(String message, [MaterialColor color = Colors.red]) {
-    _scaffoldKey.currentState.showSnackBar(
-        new SnackBar(backgroundColor: color, content: new Text(message)));
-  }
 }
 
-class _newPage extends StatelessWidget {
+void showMessage(String message, GlobalKey<ScaffoldState> _scaffoldKey, [MaterialColor color = Colors.blue]) {
+  _scaffoldKey.currentState.showSnackBar(
+      new SnackBar(backgroundColor: color, content: new Text(message)));
+}
+
+class NewPage extends StatelessWidget {
+  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
       appBar: AppBar(
         title: Text("New Design"),
       ),
@@ -330,7 +333,6 @@ class _newPage extends StatelessWidget {
             children: <Widget>[
               Card(
                 elevation: 10.0,
-                shape: CircleBorder(side: BorderSide.none),
                 color: Colors.yellow,
                 child: Column(
                   children: <Widget>[
@@ -341,10 +343,18 @@ class _newPage extends StatelessWidget {
                     ),
                     IconButton(icon: Icon(Icons.call), onPressed: null),
                     Text("Call"),
+                    SizedBox.fromSize(
+                      child: FlatButton(onPressed: () {
+                        showMessage("Pressed", _scaffoldKey);
+                      }, child: Image.asset('images/background.jpg')),
+                      size: Size(200.0, 200.0),
+                    )
                   ],
                 ),
               )
             ],
+            mainAxisSize: MainAxisSize.max,
+            mainAxisAlignment: MainAxisAlignment.center,
           ),
         ],
       ),
