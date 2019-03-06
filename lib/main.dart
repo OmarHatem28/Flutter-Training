@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'dart:math';
 
 void main() => runApp(MyApp());
 
@@ -231,20 +232,8 @@ class RandomWordsState extends State<RandomWords> {
               title: const Text('Saved Suggestions'),
             ),
             body: new ListView(children: divided),
-//            floatingActionButton: IconButton(
-//                icon: Icon(Icons.navigate_next),
-//                highlightColor: Colors.yellow,
-//                color: Colors.red,
-//                splashColor: Colors.blue,
-//                onPressed: () {
-//                  Navigator.push(
-//                    context,
-//                    MaterialPageRoute(builder: (context) => NewPage()),
-//                  );
-//                }),
             floatingActionButton: Container(
               decoration: ShapeDecoration(shape: CircleBorder(), color: Colors.red),
-              // side:sideborder.none
               child: IconButton(
                   icon: Icon(Icons.navigate_next),
                   highlightColor: Colors.blue,
@@ -333,8 +322,15 @@ void showMessage(String message, GlobalKey<ScaffoldState> _scaffoldKey,
       new SnackBar(backgroundColor: color, content: new Text(message)));
 }
 
-class NewPage extends StatelessWidget {
+class NewPage extends StatefulWidget {
+  @override
+  State<StatefulWidget> createState() => new NewPageState();
+}
+
+class NewPageState extends State<NewPage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
+  var rand = new Random();
+  var number=0;
 
   @override
   Widget build(BuildContext context) {
@@ -357,8 +353,12 @@ class NewPage extends StatelessWidget {
                       height: 100.0,
                       fit: BoxFit.fitHeight,
                     ),
-                    IconButton(icon: Icon(Icons.call), onPressed: null),
-                    Text("Call"),
+                    IconButton(icon: Icon(Icons.call), onPressed: () {
+                      setState(() {
+                        number = rand.nextInt(100);
+                      });
+                    }),
+                    Text(number.toString()),
                     SizedBox.fromSize(
                       child: FlatButton(
                           onPressed: () {

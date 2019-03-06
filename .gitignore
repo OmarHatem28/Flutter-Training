@@ -9,7 +9,6 @@
 .buildlog/
 .history
 .svn/
-*.json
 
 # IntelliJ related
 *.iml
