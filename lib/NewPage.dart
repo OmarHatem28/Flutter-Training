@@ -4,7 +4,7 @@ import 'dart:convert';
 import 'dart:math';
 import 'main.dart';
 import 'Models/APIResponse.dart';
-
+import 'package:flutter_swiper/flutter_swiper.dart';
 
 class NewPage extends StatefulWidget {
   @override
@@ -14,68 +14,44 @@ class NewPage extends StatefulWidget {
 class NewPageState extends State<NewPage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   var rand = new Random();
-  var number=0;
+  var number = 0;
   var pageNo = 1;
-
+  var characterImg;
 
   @override
   Widget build(BuildContext context) {
-
-    getCharacters();
-
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
         title: Text("New Design"),
       ),
-      body: Column(
-        children: <Widget>[
-          Row(
-            children: <Widget>[
-              Card(
-                elevation: 10.0,
-                color: Colors.yellow,
-                child: Column(
-                  children: <Widget>[
-                    Image.asset(
-                      "images/background.jpg",
-                      height: 100.0,
-                      fit: BoxFit.fitHeight,
-                    ),
-                    IconButton(icon: Icon(Icons.call), onPressed: () {
-                      setState(() {
-                        number = rand.nextInt(100);
-                        pageNo++;
-                      });
-                    }),
-                    Text(number.toString()),
-                    SizedBox.fromSize(
-                      child: FlatButton(
-                          onPressed: () {
-                            showMessage("Pressed", _scaffoldKey);
-                          },
-                          child: Image.asset('images/background.jpg')),
-                      size: Size(200.0, 200.0),
-                    )
-                  ],
-                ),
-              )
-            ],
-            mainAxisSize: MainAxisSize.max,
-            mainAxisAlignment: MainAxisAlignment.center,
-          ),
-        ],
+      body: Container(
+        child: buildSwiper(),
       ),
     );
   }
 
-  getCharacters() async {
-    final waitMe = await http.get('https://rickandmortyapi.com/api/character/?page=${pageNo}');
+  Widget buildSwiper() {
+    return new Swiper(
+      itemBuilder: (BuildContext context, int index) {
+        return new Image.network(
+          "https://rickandmortyapi.com/api/character/avatar/${index+1}.jpeg",
+          fit: BoxFit.contain,
+        );
+      },
+      itemCount: 15,
+      viewportFraction: 0.8,
+      scale: 0.9,
+    );
+  }
+
+  Future<String> getCharacters(int index) async {
+    final waitMe = await http
+        .get('https://rickandmortyapi.com/api/character/?page=$pageNo');
     Map charMap = jsonDecode(waitMe.body);
     var response = APIResponse.fromJson(charMap);
-    showMessage(response.characters[0].name, _scaffoldKey);
+    showMessage(response.characters[index].image, _scaffoldKey);
 
-    return waitMe;
+    return response.characters[index].image;
   }
-  
 }

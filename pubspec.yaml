@@ -26,6 +26,7 @@ dependencies:
   flutter_facebook_login: ^1.2.0
   firebase_core: ^0.2.5
   firebase_messaging: ^4.0.0+1
+  flutter_swiper: ^1.1.5
 
 dev_dependencies:
   flutter_test:
