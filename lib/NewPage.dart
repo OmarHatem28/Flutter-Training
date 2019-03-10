@@ -25,18 +25,30 @@ class NewPageState extends State<NewPage> {
       appBar: AppBar(
         title: Text("New Design"),
       ),
-      body: Container(
-        child: buildSwiper(),
-      ),
+      body: Card(
+        child: Column(
+            children: <Widget>[
+              SizedBox(
+                height: 300.0,
+                child: buildSwiper(),
+              ),
+            ],
+        ),
+      )
     );
   }
 
   Widget buildSwiper() {
     return new Swiper(
       itemBuilder: (BuildContext context, int index) {
-        return new Image.network(
-          "https://rickandmortyapi.com/api/character/avatar/${index+1}.jpeg",
-          fit: BoxFit.contain,
+        return Column(
+          children: <Widget>[
+            new Image.network(
+              "https://rickandmortyapi.com/api/character/avatar/${index+1}.jpeg",
+              fit: BoxFit.contain,
+            ),
+            Text("Heeloloollo"),
+          ],
         );
       },
       itemCount: 15,
