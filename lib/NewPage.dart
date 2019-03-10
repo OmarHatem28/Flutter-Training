@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 import 'dart:math';
 import 'main.dart';
+import 'Models/APIResponse.dart';
 
 
 class NewPage extends StatefulWidget {
@@ -12,9 +15,14 @@ class NewPageState extends State<NewPage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   var rand = new Random();
   var number=0;
+  var pageNo = 1;
+
 
   @override
   Widget build(BuildContext context) {
+
+    getCharacters();
+
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
@@ -37,6 +45,7 @@ class NewPageState extends State<NewPage> {
                     IconButton(icon: Icon(Icons.call), onPressed: () {
                       setState(() {
                         number = rand.nextInt(100);
+                        pageNo++;
                       });
                     }),
                     Text(number.toString()),
@@ -59,4 +68,14 @@ class NewPageState extends State<NewPage> {
       ),
     );
   }
+
+  getCharacters() async {
+    final waitMe = await http.get('https://rickandmortyapi.com/api/character/?page=${pageNo}');
+    Map charMap = jsonDecode(waitMe.body);
+    var response = APIResponse.fromJson(charMap);
+    showMessage(response.characters[0].name, _scaffoldKey);
+
+    return waitMe;
+  }
+  
 }
