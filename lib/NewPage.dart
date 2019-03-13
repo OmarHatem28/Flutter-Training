@@ -77,11 +77,13 @@ class NewPageState extends State<NewPage> {
   }
 
   Future<APIResponse> getCharacters() async {
-    final waitMe = await http
+    final response = await http
         .get('https://rickandmortyapi.com/api/character/?page=$pageNo');
-    Map charMap = jsonDecode(waitMe.body);
-    var response = APIResponse.fromJson(charMap);
-    showMessage("HI", _scaffoldKey);
-    return response;
+    if ( response.statusCode == 200 ){
+      return APIResponse.fromJson(jsonDecode(response.body));
+    } else {
+      showMessage("Check Your Internet Connection!!", _scaffoldKey);
+      throw Exception("Check Your Internet Connection");
+    }
   }
 }
