@@ -25,30 +25,49 @@ class NewPageState extends State<NewPage> {
       appBar: AppBar(
         title: Text("New Design"),
       ),
-      body: Card(
-        child: Column(
-            children: <Widget>[
-              SizedBox(
-                height: 300.0,
-                child: buildSwiper(),
-              ),
-            ],
-        ),
-      )
+      body: Column(
+        children: <Widget>[
+          SizedBox(
+            height: 300.0,
+            child: FutureBuilder<APIResponse>(
+              future: getCharacters(),
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  return buildSwiper(snapshot.data);
+                } else if (snapshot.hasError) {
+                  return Text("${snapshot.error}");
+                }
+                // By default, show a loading spinner
+                return CircularProgressIndicator();
+              },
+            ),
+          ),
+        ],
+      ),
     );
   }
 
-  Widget buildSwiper() {
+  Widget buildSwiper(APIResponse results) {
     return new Swiper(
+      autoplay: true,
       itemBuilder: (BuildContext context, int index) {
-        return Column(
-          children: <Widget>[
-            new Image.network(
-              "https://rickandmortyapi.com/api/character/avatar/${index+1}.jpeg",
-              fit: BoxFit.contain,
-            ),
-            Text("Heeloloollo"),
-          ],
+        return Container(
+          margin: EdgeInsets.all(10.0),
+          child: Column(
+            children: <Widget>[
+              Expanded(
+                flex: 15,
+                child: new Image.network(
+                  results.characters[index].image,
+                  fit: BoxFit.contain,
+                  scale: 0.5,
+                ),
+              ),
+              Expanded(
+                child: Text(results.characters[index].name),
+              ),
+            ],
+          ),
         );
       },
       itemCount: 15,
@@ -57,13 +76,12 @@ class NewPageState extends State<NewPage> {
     );
   }
 
-  Future<String> getCharacters(int index) async {
+  Future<APIResponse> getCharacters() async {
     final waitMe = await http
         .get('https://rickandmortyapi.com/api/character/?page=$pageNo');
     Map charMap = jsonDecode(waitMe.body);
     var response = APIResponse.fromJson(charMap);
-    showMessage(response.characters[index].image, _scaffoldKey);
-
-    return response.characters[index].image;
+    showMessage("HI", _scaffoldKey);
+    return response;
   }
 }

@@ -116,49 +116,56 @@ class RandomWordsState extends State<RandomWords> {
   Widget titleRow() {
     return Row(
       children: <Widget>[
-        Container(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Text(
-                "A Lake",
-                style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 24.0,
-                  fontWeight: FontWeight.bold,
+        Expanded(
+          flex: 3,
+          child: Container(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Text(
+                  "A Lake",
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 24.0,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-              ),
-              Text(
-                "Green Space With Water in the middle",
-                style: TextStyle(
-                  color: Colors.grey,
-                  fontSize: 14.0,
+                Text(
+                  "Green Space With Water in the middle",
+                  style: TextStyle(
+                    color: Colors.grey,
+                    fontSize: 14.0,
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
+            margin: EdgeInsets.fromLTRB(15.0, 20.0, 0, 0),
           ),
-          margin: EdgeInsets.fromLTRB(15.0, 20.0, 0, 0),
         ),
-        Container(
-          child: Column(
-            children: <Widget>[
-              Icon(
-                Icons.star,
-                color: Colors.yellow,
-              )
-            ],
+        Expanded(
+          child: Container(
+            child: Column(
+              children: <Widget>[
+                Icon(
+                  Icons.star,
+                  color: Colors.yellow,
+                )
+              ],
+            ),
+            margin: EdgeInsets.fromLTRB(40.0, 20.0, 10.0, 0),
           ),
-          margin: EdgeInsets.fromLTRB(40.0, 20.0, 10.0, 0),
         ),
-        Container(
-          child: Column(
-            children: <Widget>[
-              Text(
-                "28",
-              )
-            ],
+        Expanded(
+          child: Container(
+            child: Column(
+              children: <Widget>[
+                Text(
+                  "28",
+                )
+              ],
+            ),
+            margin: EdgeInsets.fromLTRB(0, 20.0, 0, 0),
           ),
-          margin: EdgeInsets.fromLTRB(0, 20.0, 0, 0),
         ),
       ],
     );
@@ -233,7 +240,8 @@ class RandomWordsState extends State<RandomWords> {
             ),
             body: new ListView(children: divided),
             floatingActionButton: Container(
-              decoration: ShapeDecoration(shape: CircleBorder(), color: Colors.red),
+              decoration:
+                  ShapeDecoration(shape: CircleBorder(), color: Colors.red),
               child: IconButton(
                   icon: Icon(Icons.navigate_next),
                   highlightColor: Colors.blue,
@@ -248,6 +256,7 @@ class RandomWordsState extends State<RandomWords> {
             ),
             drawer: Container(
               decoration: BoxDecoration(color: Colors.white),
+              width: 300.0,
               child: Column(
                 children: <Widget>[
                   Row(
@@ -321,8 +330,6 @@ void showMessage(String message, GlobalKey<ScaffoldState> _scaffoldKey,
   _scaffoldKey.currentState.showSnackBar(
       new SnackBar(backgroundColor: color, content: new Text(message)));
 }
-
-
 
 class RandomWords extends StatefulWidget {
   @override
