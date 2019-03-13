@@ -17,6 +17,13 @@ class NewPageState extends State<NewPage> {
   var number = 0;
   var pageNo = 1;
   var characterImg;
+  Future<APIResponse> results;
+
+  @override
+  void initState() {
+    super.initState();
+    results = getCharacters();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +37,7 @@ class NewPageState extends State<NewPage> {
           SizedBox(
             height: 300.0,
             child: FutureBuilder<APIResponse>(
-              future: getCharacters(),
+              future: results,
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
                   return buildSwiper(snapshot.data);
